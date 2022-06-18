@@ -1,6 +1,8 @@
 package controller
 
 import (
+	"net/http"
+
 	"github.com/Kantaro0829/clean-architecture-in-go/domain"
 	"github.com/Kantaro0829/clean-architecture-in-go/interfaces/database"
 	"github.com/Kantaro0829/clean-architecture-in-go/usecase"
@@ -37,4 +39,13 @@ func (controller *UserController) GetUser() []domain.User {
 
 func (controller *UserController) Delete(id string) {
 	controller.Interactor.Delete(id)
+}
+
+func (controller *UserController) Update(c *gin.Context) {
+	user := domain.User{}
+	if err := c.ShouldBindJSON(&user); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+	controller.Interactor.Update(user, user.Name)
 }

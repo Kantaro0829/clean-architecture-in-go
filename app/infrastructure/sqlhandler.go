@@ -1,6 +1,9 @@
 package infrastructure
 
 import (
+	"fmt"
+
+	"github.com/Kantaro0829/clean-architecture-in-go/domain"
 	"github.com/Kantaro0829/clean-architecture-in-go/interfaces/database"
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
@@ -21,14 +24,31 @@ func NewSqlHandler() database.SqlHandler {
 	return sqlHandler
 }
 
+//データベースが変わった場合や使用しているフレームワークが
+//変更された場合などはここを変更する
+//interface層内の./database配下にinterfaceを定義する
 func (handler *SqlHandler) Create(obj interface{}) {
+	//Gorm.Createメソッド
 	handler.db.Create(obj)
 }
 
 func (handler *SqlHandler) FindAll(obj interface{}) {
+	//Gorm.Findメソッド
 	handler.db.Find(obj)
 }
 
 func (handler *SqlHandler) DeleteById(obj interface{}, id string) {
+	//Gorm.Deleteメソッド
 	handler.db.Delete(obj, id)
+}
+
+func (handler *SqlHandler) UpdateById(obj domain.User, name string) {
+	//Gorm.Updateメソッド
+	handler.db.First(&obj)
+	fmt.Println("objの中身")
+	fmt.Println(obj.ID)
+	fmt.Println(obj.Name)
+	obj.Name = name
+	handler.db.Save(&obj)
+
 }
