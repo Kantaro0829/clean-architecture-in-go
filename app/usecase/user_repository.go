@@ -6,7 +6,7 @@ import (
 
 type UserRepository interface {
 	Store(domain.User)
-	Select() []domain.User
+	Select() ([]domain.User, error)
 	Delete(id string)
 	Update(u domain.User, name string)
 }

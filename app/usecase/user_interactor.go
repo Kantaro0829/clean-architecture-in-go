@@ -10,7 +10,7 @@ func (interactor *UserInteractor) Add(u domain.User) {
 	interactor.UserRepository.Store(u)
 }
 
-func (interactor *UserInteractor) GetInfo() []domain.User {
+func (interactor *UserInteractor) GetInfo() ([]domain.User, error) {
 	return interactor.UserRepository.Select()
 }
 

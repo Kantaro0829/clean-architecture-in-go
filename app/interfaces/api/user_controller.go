@@ -23,18 +23,30 @@ func NewUserController(sqlHandler database.SqlHandler) *UserController {
 	}
 }
 
+//ルーティングのハンドラ
 func (controller *UserController) Create(c *gin.Context) {
 	u := domain.User{}
 	c.Bind(&u)
 	controller.Interactor.Add(u)
-	createdUsers := controller.Interactor.GetInfo()
+	createdUsers, err := controller.Interactor.GetInfo()
+	if err != nil {
+		//エラーハンドリング
+		c.JSON(400, gin.H{"message": err.Error()})
+		return
+	}
+	//createdUsers := controller.Interactor.GetInfo()
 	c.JSON(201, createdUsers)
 	return
 }
 
-func (controller *UserController) GetUser() []domain.User {
-	res := controller.Interactor.GetInfo()
-	return res
+func (controller *UserController) GetUser(c *gin.Context) {
+	res, err := controller.Interactor.GetInfo()
+	if err != nil {
+		//エラーハンドリング
+		c.JSON(400, gin.H{"message": err.Error()})
+		return
+	}
+	c.JSON(http.StatusOK, res)
 }
 
 func (controller *UserController) Delete(id string) {

@@ -29,12 +29,22 @@ func NewSqlHandler() database.SqlHandler {
 //interface層内の./database配下にinterfaceを定義する
 func (handler *SqlHandler) Create(obj interface{}) {
 	//Gorm.Createメソッド
+	//objtemp := obj
+
+	//var err = handler.db.Create(objtemp)
+
 	handler.db.Create(obj)
 }
 
-func (handler *SqlHandler) FindAll(obj interface{}) {
+func (handler *SqlHandler) FindAll(user []domain.User) ([]domain.User, error) {
 	//Gorm.Findメソッド
-	handler.db.Find(obj)
+	//handler.db.Find(obj)
+	users := user
+	if err := handler.db.Find(&users).Error; err != nil {
+		return nil, err
+	}
+	fmt.Println(users)
+	return users, nil
 }
 
 func (handler *SqlHandler) DeleteById(obj interface{}, id string) {

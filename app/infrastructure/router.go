@@ -14,9 +14,13 @@ func Init() {
 	userController := controllers.NewUserController(NewSqlHandler())
 
 	router.GET("/users", func(c *gin.Context) {
-		users := userController.GetUser() //それぞれのルーティングごと関数を呼び出す
+		//users, err := userController.GetUser() //それぞれのルーティングごと関数を呼び出す
+		userController.GetUser(c)
+		// if err != nil {
+		// 	c.JSON(http.StatusBadRequest, gin.H{"message": err.})
+		// }
 		//c.Bind(&users)
-		c.JSON(http.StatusOK, gin.H{"a": users})
+		//.JSON(http.StatusOK, gin.H{"a": users})
 		return
 	})
 
