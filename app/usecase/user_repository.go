@@ -5,8 +5,13 @@ import (
 )
 
 type UserRepository interface {
-	Store(domain.User)
+	Store(domain.User) error
 	Select() ([]domain.User, error)
 	Delete(id string)
+	DeleteByMail(user domain.User) error
 	Update(u domain.User, name string)
+	UpdateByMail(user domain.User) error
+	GetPassword(mail string) (string, error)
+	GetPasswordForUpdate(mail string) (domain.User, error)
+	//GetUserForUpdate(user domain.User) (domain.User, error)
 }

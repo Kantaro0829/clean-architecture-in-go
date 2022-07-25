@@ -1,6 +1,7 @@
 package controller
 
 import (
+	"fmt"
 	"net/http"
 
 	"github.com/Kantaro0829/clean-architecture-in-go/domain"
@@ -25,17 +26,29 @@ func NewUserController(sqlHandler database.SqlHandler) *UserController {
 
 //ルーティングのハンドラ
 func (controller *UserController) Create(c *gin.Context) {
-	u := domain.User{}
-	c.Bind(&u)
-	controller.Interactor.Add(u)
-	createdUsers, err := controller.Interactor.GetInfo()
+	var userJson domain.User
+	//上で宣言した構造体にJsonをバインド。エラーならエラー処理を返す
+	if err := c.ShouldBindJSON(&userJson); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+	mail, name, password := userJson.Mail, userJson.Name, userJson.Password
+
+	user := domain.User{}
+	user.Mail = mail
+	user.Name = name
+	user.Password = password
+	fmt.Printf("json中身%v", user)
+	//u := domain.User{}
+	//c.Bind(&u)
+	//controller.Interactor.Add(u)
+	err := controller.Interactor.Add(user)
 	if err != nil {
-		//エラーハンドリング
 		c.JSON(400, gin.H{"message": err.Error()})
 		return
 	}
-	//createdUsers := controller.Interactor.GetInfo()
-	c.JSON(201, createdUsers)
+	c.JSON(http.StatusOK, gin.H{"message": "データ登録完了"})
+
 	return
 }
 
@@ -60,4 +73,30 @@ func (controller *UserController) Update(c *gin.Context) {
 		return
 	}
 	controller.Interactor.Update(user, user.Name)
+}
+
+func (controller *UserController) UpdateByMail(user domain.User) (string, error, bool) {
+	message, err, isValidated := controller.Interactor.UpdateUser(user)
+	if err != nil {
+		return message, err, isValidated
+	}
+	return message, nil, isValidated
+}
+
+func (controller *UserController) DeleteByMail(user domain.User) (string, error, bool) {
+	message, err, isValidated := controller.Interactor.DeleteByMail(user)
+	if err != nil {
+		return message, err, isValidated
+	}
+	return message, nil, isValidated
+}
+
+func (controller *UserController) Login(mail string, password string) (bool, error) {
+
+	result, err := controller.Interactor.Login(mail, password)
+
+	if err != nil {
+		return false, err
+	}
+	return result, nil
 }

@@ -10,3 +10,35 @@ Content-Type: application/json
 GET http://localhost:3000/users
 
 ###
+
+POST http://localhost:3000/users
+Content-Type: application/json
+
+{
+    "name": "test太郎", "mail": "test1@ecc.ac.jp", "password": "password1234"
+}
+
+###
+POST http://localhost:3000/users/login
+Content-Type: application/json
+
+{
+    "mail": "test1@ecc.ac.jp", "password": "password1234"
+}
+
+###
+POST http://localhost:3000/users/update
+Content-Type: application/json
+
+{
+    "mail": "test1@ecc.ac.jp", "password": "password1234", "name": "変更した"
+}
+
+###
+
+POST http://localhost:3000/users/delete
+Content-Type: application/json
+
+{
+    "mail": "test1@ecc.ac.jp", "password": "password1234" 
+}
