@@ -1,8 +1,6 @@
 package database
 
 import (
-	"fmt"
-
 	"github.com/Kantaro0829/clean-architecture-in-go/domain"
 )
 
@@ -15,9 +13,7 @@ type UserRepository struct {
 
 //本来ここで詳細な操作をするべき？ 構造体の指定などもここ？
 func (db *UserRepository) Store(u domain.User) error {
-	// db.Create(&u)
-	fmt.Println("loooooooooooooooooooooooooooooooooooooooooooooooooog")
-	fmt.Printf("user_repository%v", u)
+
 	err := db.Create(u)
 	if err != nil {
 		return err
@@ -43,8 +39,6 @@ func (db *UserRepository) Update(u domain.User, name string) {
 }
 
 func (db *UserRepository) GetMailNamePasswordByMail(mail string) (domain.User, error) {
-	// fmt.Println("引数の中身")
-	// fmt.Println(mail)
 	result, err := db.GetMailNamePasswordByMail(mail)
 	if err != nil {
 		return result, err
@@ -53,11 +47,9 @@ func (db *UserRepository) GetMailNamePasswordByMail(mail string) (domain.User, e
 }
 
 func (db *UserRepository) UpdateByMail(user domain.User) error {
-	fmt.Println(user)
-	fmt.Println("UserRepository UpdateByMail!!!!!!!!!!!!!!")
-	//err := db.UpdateByMail(user)
+
 	err := db.UpdateName(user)
-	fmt.Println("update完了")
+
 	if err != nil {
 		return err
 	}
@@ -66,6 +58,7 @@ func (db *UserRepository) UpdateByMail(user domain.User) error {
 
 func (db *UserRepository) GetPassword(mail string) (string, error) {
 	passwword, err := db.GetPasswordByMail(mail)
+
 	if err != nil {
 		return "", err
 	}
@@ -78,11 +71,12 @@ func (db *UserRepository) GetPasswordForUpdate(mail string) (domain.User, error)
 	if err != nil {
 		return user, err
 	}
+
 	return user, nil
 }
 
 func (db *UserRepository) DeleteByMail(user domain.User) error {
-	//err := db.UpdateByMail(user)
+
 	err := db.DeleteOne(user)
 
 	if err != nil {
@@ -90,11 +84,3 @@ func (db *UserRepository) DeleteByMail(user domain.User) error {
 	}
 	return nil
 }
-
-// func (db *UserRepository) GetUserForUpdate(user domain.User) (domain.User, error) {
-// 	result, err := db.GetUserForUpdate(user)
-// 	if err != nil {
-// 		return result, err
-// 	}
-// 	return result, nil
-// }

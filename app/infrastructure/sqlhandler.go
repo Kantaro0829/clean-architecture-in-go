@@ -70,11 +70,11 @@ func (handler *SqlHandler) UpdateName(user domain.User) error {
 
 func (handler *SqlHandler) GetMailNamePasswordByMail(mail string) (domain.User, error) {
 	user := domain.User{}
+
 	if err := handler.db.Select("id", "mail", "name", "password").Where("mail = ?", mail).First(&user).Error; err != nil {
 		return user, err
 	}
-	fmt.Println("DBから取り出した値")
-	fmt.Println(user)
+
 	return user, nil
 }
 
@@ -87,20 +87,9 @@ func (handler *SqlHandler) GetPasswordByMail(mail string) (string, error) {
 }
 
 func (handler *SqlHandler) GetPasswordAndId(mail string) (domain.User, error) {
-	fmt.Println("SQLハンドラ")
 	user := domain.User{}
 	if err := handler.db.Select("password, id").Where("mail = ?", mail).First(&user).Error; err != nil {
 		return user, err
 	}
 	return user, nil
 }
-
-// func (handler *SqlHandler) GetUserForUpdate(user domain.User) (domain.User, error) {
-// 	fmt.Println("GetUserForUpdate")
-// 	if err := handler.db.First(&user).Error; err != nil {
-// 		return user, err
-// 	}
-// 	return user, nil
-// }
-
-// func (handler *SqlHandler)

@@ -13,5 +13,4 @@ type SqlHandler interface {
 	GetMailNamePasswordByMail(mail string) (domain.User, error)
 	GetPasswordAndId(mail string) (domain.User, error)
 	DeleteOne(user domain.User) error
-	//GetUserForUpdate(user domain.User) (domain.User, error)
 }
