@@ -68,7 +68,7 @@ func (handler *SqlHandler) UpdateName(user domain.User) error {
 	return nil
 }
 
-func (handler *SqlHandler) GetMailNamePasswordByMail(mail string) (domain.User, error) {
+func (handler *SqlHandler) GetIdMailNamePasswordByMail(mail string) (domain.User, error) {
 	user := domain.User{}
 
 	if err := handler.db.Select("id", "mail", "name", "password").Where("mail = ?", mail).First(&user).Error; err != nil {

@@ -6,6 +6,7 @@ import (
 
 	"github.com/Kantaro0829/clean-architecture-in-go/domain"
 	"github.com/Kantaro0829/clean-architecture-in-go/interfaces/database"
+	"github.com/Kantaro0829/clean-architecture-in-go/interfaces/token"
 	"github.com/Kantaro0829/clean-architecture-in-go/usecase"
 	"github.com/gin-gonic/gin"
 )
@@ -14,11 +15,19 @@ type UserController struct {
 	Interactor usecase.UserInteractor
 }
 
-func NewUserController(sqlHandler database.SqlHandler) *UserController {
+func NewUserController(
+	sqlHandler database.SqlHandler,
+	//以下追加
+	tokenHandler token.TokenHandler,
+) *UserController {
 	return &UserController{
 		Interactor: usecase.UserInteractor{
 			UserRepository: &database.UserRepository{
 				SqlHandler: sqlHandler,
+			},
+			//以下追加
+			Tokenizer: &token.TokenizerImpl{
+				TokenHandler: tokenHandler,
 			},
 		},
 	}
@@ -91,12 +100,15 @@ func (controller *UserController) DeleteByMail(user domain.User) (string, error,
 	return message, nil, isValidated
 }
 
-func (controller *UserController) Login(mail string, password string) (bool, error) {
-
-	result, err := controller.Interactor.Login(mail, password)
+func (controller *UserController) Login(mail string, password string) (domain.Token, bool, error) {
+	//以下Token追加
+	token, result, err := controller.Interactor.Login(mail, password)
 
 	if err != nil {
-		return false, err
+		//以下エラー時Tokenの代わりに空文字を返す処理追加
+		return "", false, err
 	}
-	return result, nil
+	fmt.Println(token)
+	//戻り値にtoken追加
+	return token, result, nil
 }

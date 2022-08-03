@@ -10,7 +10,7 @@ type SqlHandler interface {
 	DeleteById(object interface{}, id string)
 	UpdateName(user domain.User) error
 	GetPasswordByMail(mail string) (string, error)
-	GetMailNamePasswordByMail(mail string) (domain.User, error)
+	GetIdMailNamePasswordByMail(mail string) (domain.User, error)
 	GetPasswordAndId(mail string) (domain.User, error)
 	DeleteOne(user domain.User) error
 }

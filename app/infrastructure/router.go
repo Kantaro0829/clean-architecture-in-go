@@ -11,7 +11,10 @@ import (
 func Init() {
 	// Echo instance
 	router := gin.Default()
-	userController := controllers.NewUserController(NewSqlHandler())
+	userController := controllers.NewUserController(
+		NewSqlHandler(),
+		NewTokenHandler(), //jwt用のDI
+	)
 
 	router.GET("/users", func(c *gin.Context) {
 
@@ -62,15 +65,21 @@ func Init() {
 			return
 		}
 		mail, password := userJson.Mail, userJson.Password
-		result, err := userController.Login(mail, password)
+		//以下Tokenを追加で受け取る
+		token, result, err := userController.Login(mail, password)
 
 		if err != nil {
 			c.JSON(http.StatusBadRequest, gin.H{"status": http.StatusBadRequest, "message": "dbサーバーのエラー"})
 			return
 		}
 
+		if token == "" {
+			c.JSON(http.StatusBadRequest, gin.H{"status": http.StatusBadRequest, "message": "JWTtokenの発行失敗"})
+			return
+		}
+
 		if result {
-			c.JSON(http.StatusOK, gin.H{"status": http.StatusOK, "message": "ログイン完了"})
+			c.JSON(http.StatusOK, gin.H{"status": http.StatusOK, "message": "ログイン完了", "token": token})
 			return
 		}
 
