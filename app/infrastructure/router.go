@@ -1,6 +1,7 @@
 package infrastructure
 
 import (
+	"fmt"
 	"net/http"
 
 	"github.com/Kantaro0829/clean-architecture-in-go/domain"
@@ -105,6 +106,34 @@ func Init() {
 		}
 		//userController.Update(c)
 		c.JSON(http.StatusOK, gin.H{"message": message})
+		return
+	})
+
+	// inUserRouter := router.Group("/users",
+	// 	func(c *gin.Context) { userController.Authenticate(c) },
+	// )
+
+	router.GET("users/authenticate", func(c *gin.Context) {
+		// token := domain.Token
+		//token = c.Request.Header["Authorization"][0]
+		result := userController.Authenticate(c)
+		//result := userController.Authenticate(token)
+		if result != nil {
+			fmt.Printf(":エラー内容：%v", result)
+			c.JSON(
+				http.StatusUnauthorized,
+				gin.H{
+					"status":  http.StatusUnauthorized,
+					"message": "JWT認証失敗",
+				})
+			return
+		}
+		c.JSON(
+			http.StatusAccepted,
+			gin.H{
+				"statsu":  http.StatusAccepted,
+				"message": "JWT認証成功",
+			})
 		return
 	})
 

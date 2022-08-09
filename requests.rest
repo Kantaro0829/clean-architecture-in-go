@@ -15,7 +15,7 @@ POST http://localhost:3000/users
 Content-Type: application/json
 
 {
-    "name": "test太郎", "mail": "test1@ecc.ac.jp", "password": "password1234"
+    "name": "test二郎", "mail": "test2@ecc.ac.jp", "password": "password1234"
 }
 
 ###
@@ -23,7 +23,7 @@ POST http://localhost:3000/users/login
 Content-Type: application/json
 
 {
-    "mail": "test1@ecc.ac.jp", "password": "password1234"
+    "mail": "test2@ecc.ac.jp", "password": "password1234"
 }
 
 ###
@@ -42,3 +42,8 @@ Content-Type: application/json
 {
     "mail": "test1@ecc.ac.jp", "password": "password1234" 
 }
+
+###
+
+GET http://localhost:3000/users/authenticate
+Authorization: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6InRlc3QyQGVjYy5hYy5qcCIsImV4cCI6MTY2MDAyMTY4MSwiaWF0IjoiMjAyMi0wOC0wOVQwNDowODowMS40NzE2MTkxMDJaIiwibmFtZSI6InRlc3Tkuozpg44iLCJzdWIiOjJ9.Bv6Fip9-TTw55oZLVX9eJWd2cLlD3eLvbbaSb1DC2nQ

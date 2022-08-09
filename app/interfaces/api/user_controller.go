@@ -112,3 +112,25 @@ func (controller *UserController) Login(mail string, password string) (domain.To
 	//戻り値にtoken追加
 	return token, result, nil
 }
+
+func (controller *UserController) Authenticate(c Context) error {
+	// Get token from request header
+	var header domain.HeaderWithToken
+	err := c.BindHeader(&header)
+	if err != nil {
+		return err
+		//BadRequestError(c, "Invalid request format.")
+	}
+
+	// Verify token
+	tokenString := domain.Token(header.Authorization)
+	err = controller.Interactor.Authenticate(tokenString)
+	if err != nil {
+		// switch e := err.(type) {
+		// case *domain.ErrorWithStatus:
+		// 	SendErrorResponse(c, e.Status, e.Message)
+		// }
+		return err
+	}
+	return nil
+}

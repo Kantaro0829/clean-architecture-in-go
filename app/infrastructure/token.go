@@ -3,6 +3,7 @@ package infrastructure
 import (
 	"errors"
 	//"os"
+	"fmt"
 	"time"
 
 	"github.com/Kantaro0829/clean-architecture-in-go/interfaces/token"
@@ -36,6 +37,8 @@ func (handler *TokenHandler) Generate(uid int, username string, email string) (s
 	claims["iat"] = time.Now()
 	claims["exp"] = time.Now().Add(time.Hour * 1).Unix()
 
+	fmt.Printf("トークンの中身 : %v", claims)
+
 	// signature
 	tokenString, err := token.SignedString([]byte(handler.Secret))
 	if err != nil {
@@ -45,6 +48,8 @@ func (handler *TokenHandler) Generate(uid int, username string, email string) (s
 }
 
 func (handler *TokenHandler) VerifyToken(tokenString string) error {
+	fmt.Println("JWTトークンの中身")
+	fmt.Println(tokenString)
 	_, err := jwt.Parse(tokenString, func(token *jwt.Token) (interface{}, error) {
 		return []byte(handler.Secret), nil
 	})

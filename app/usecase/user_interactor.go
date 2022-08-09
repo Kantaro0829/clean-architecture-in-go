@@ -57,6 +57,17 @@ func (interactor *UserInteractor) Login(mail string, password string) (domain.To
 	return token, isValidated, nil
 }
 
+func (interactor *UserInteractor) Authenticate(token domain.Token) error {
+	if err := interactor.Tokenizer.Verify(token); err != nil {
+		// return &domain.ErrorWithStatus{
+		// 	Status:  http.StatusBadRequest,
+		// 	Message: err.Error(),
+		// }
+		return err
+	}
+	return nil
+}
+
 func (interactor *UserInteractor) UpdateUser(userJson domain.User) (string, error, bool) {
 	mail := userJson.Mail
 	password := userJson.Password
