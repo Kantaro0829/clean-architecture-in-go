@@ -4,11 +4,14 @@ import (
 	"fmt"
 
 	"github.com/Kantaro0829/clean-architecture-in-go/domain"
+	"github.com/Kantaro0829/clean-architecture-in-go/interfaces/token"
 	//"golang.org/x/crypto/bcrypt"
 )
 
 type UserInteractor struct {
 	UserRepository UserRepository
+	//以下試しに追加
+	Tokenizer token.Tokenizer
 }
 
 func (interactor *UserInteractor) Add(u domain.User) error {
@@ -29,15 +32,40 @@ func (interactor *UserInteractor) Update(u domain.User, name string) {
 	interactor.UserRepository.Update(u, name)
 }
 
-func (interactor *UserInteractor) Login(mail string, password string) (bool, error) {
-	regedPassword, err := interactor.UserRepository.GetPassword(mail)
+func (interactor *UserInteractor) Login(mail string, password string) (domain.Token, bool, error) {
+	//regedPassword, err := interactor.UserRepository.GetPassword(mail)
+	var token domain.Token
+	user, err := interactor.UserRepository.GetMailNamePasswordByMail(mail)
 	if err != nil {
-		return false, err
+		return token, false, err
 	}
+	regedPassword := user.Password
 	//パスワード比較
 	isValidated := ValitatePassword(regedPassword, password)
 
-	return isValidated, nil
+	if !isValidated {
+		//パスワード不一致の時
+		return token, isValidated, nil
+	}
+	fmt.Printf("id:%v, password:%v, mail:%v, name:%v", user.ID, user.Password, user.Mail, user.Name)
+	//パスワード一致の時JWT発行
+	token, err = interactor.Tokenizer.New(user)
+	if err != nil {
+		return token, isValidated, nil
+	}
+
+	return token, isValidated, nil
+}
+
+func (interactor *UserInteractor) Authenticate(token domain.Token) error {
+	if err := interactor.Tokenizer.Verify(token); err != nil {
+		// return &domain.ErrorWithStatus{
+		// 	Status:  http.StatusBadRequest,
+		// 	Message: err.Error(),
+		// }
+		return err
+	}
+	return nil
 }
 
 func (interactor *UserInteractor) UpdateUser(userJson domain.User) (string, error, bool) {

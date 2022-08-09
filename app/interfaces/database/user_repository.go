@@ -39,7 +39,8 @@ func (db *UserRepository) Update(u domain.User, name string) {
 }
 
 func (db *UserRepository) GetMailNamePasswordByMail(mail string) (domain.User, error) {
-	result, err := db.GetMailNamePasswordByMail(mail)
+	//名前にID追加
+	result, err := db.GetIdMailNamePasswordByMail(mail)
 	if err != nil {
 		return result, err
 	}

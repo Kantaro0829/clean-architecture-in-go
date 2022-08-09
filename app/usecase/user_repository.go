@@ -13,4 +13,6 @@ type UserRepository interface {
 	UpdateByMail(user domain.User) error
 	GetPassword(mail string) (string, error)
 	GetPasswordForUpdate(mail string) (domain.User, error)
+	//以下追加
+	GetMailNamePasswordByMail(mail string) (domain.User, error)
 }

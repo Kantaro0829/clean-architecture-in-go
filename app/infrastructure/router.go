@@ -1,6 +1,7 @@
 package infrastructure
 
 import (
+	"fmt"
 	"net/http"
 
 	"github.com/Kantaro0829/clean-architecture-in-go/domain"
@@ -11,7 +12,10 @@ import (
 func Init() {
 	// Echo instance
 	router := gin.Default()
-	userController := controllers.NewUserController(NewSqlHandler())
+	userController := controllers.NewUserController(
+		NewSqlHandler(),
+		NewTokenHandler(), //jwt用のDI
+	)
 
 	router.GET("/users", func(c *gin.Context) {
 
@@ -62,15 +66,21 @@ func Init() {
 			return
 		}
 		mail, password := userJson.Mail, userJson.Password
-		result, err := userController.Login(mail, password)
+		//以下Tokenを追加で受け取る
+		token, result, err := userController.Login(mail, password)
 
 		if err != nil {
 			c.JSON(http.StatusBadRequest, gin.H{"status": http.StatusBadRequest, "message": "dbサーバーのエラー"})
 			return
 		}
 
+		if token == "" {
+			c.JSON(http.StatusBadRequest, gin.H{"status": http.StatusBadRequest, "message": "JWTtokenの発行失敗"})
+			return
+		}
+
 		if result {
-			c.JSON(http.StatusOK, gin.H{"status": http.StatusOK, "message": "ログイン完了"})
+			c.JSON(http.StatusOK, gin.H{"status": http.StatusOK, "message": "ログイン完了", "token": token})
 			return
 		}
 
@@ -96,6 +106,34 @@ func Init() {
 		}
 		//userController.Update(c)
 		c.JSON(http.StatusOK, gin.H{"message": message})
+		return
+	})
+
+	// inUserRouter := router.Group("/users",
+	// 	func(c *gin.Context) { userController.Authenticate(c) },
+	// )
+
+	router.GET("users/authenticate", func(c *gin.Context) {
+		// token := domain.Token
+		//token = c.Request.Header["Authorization"][0]
+		result := userController.Authenticate(c)
+		//result := userController.Authenticate(token)
+		if result != nil {
+			fmt.Printf(":エラー内容：%v", result)
+			c.JSON(
+				http.StatusUnauthorized,
+				gin.H{
+					"status":  http.StatusUnauthorized,
+					"message": "JWT認証失敗",
+				})
+			return
+		}
+		c.JSON(
+			http.StatusAccepted,
+			gin.H{
+				"statsu":  http.StatusAccepted,
+				"message": "JWT認証成功",
+			})
 		return
 	})
 
