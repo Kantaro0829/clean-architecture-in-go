@@ -124,7 +124,7 @@ func (controller *UserController) Authenticate(c Context) error {
 
 	// Verify token
 	tokenString := domain.Token(header.Authorization)
-	err = controller.Interactor.Authenticate(tokenString)
+	id, err := controller.Interactor.Authenticate(tokenString)
 	if err != nil {
 		// switch e := err.(type) {
 		// case *domain.ErrorWithStatus:
@@ -132,5 +132,6 @@ func (controller *UserController) Authenticate(c Context) error {
 		// }
 		return err
 	}
+	fmt.Printf("JWTから解析したID : %v", id)
 	return nil
 }

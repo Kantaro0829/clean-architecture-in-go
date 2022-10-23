@@ -2,12 +2,48 @@ package infrastructure
 
 import (
 	"fmt"
+	"log"
 	"net/http"
+
+	"strings"
 
 	"github.com/Kantaro0829/clean-architecture-in-go/domain"
 	controllers "github.com/Kantaro0829/clean-architecture-in-go/interfaces/api"
+	"github.com/PuerkitoBio/goquery"
 	"github.com/gin-gonic/gin"
 )
+
+func ExampleScrape() {
+	// Request the HTML page.
+	// res, err := http.Get("http://metalsucks.net")
+	res, err := http.Get("https://ejje.weblio.jp/content/eliminate")
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer res.Body.Close()
+	if res.StatusCode != 200 {
+		log.Fatalf("status code error: %d %s", res.StatusCode, res.Status)
+	}
+
+	// Load the HTML document
+	doc, err := goquery.NewDocumentFromReader(res.Body)
+	if err != nil {
+		log.Fatal(err)
+	}
+	selection := doc.Find("div#summary")
+	innerSeceltion := selection.Find("p")
+	text := innerSeceltion.Text()
+	result := strings.Replace(text, " ", "", -1)
+
+	fmt.Println(result)
+
+	arr1 := strings.Split(result, "\n")
+
+	for _, s := range arr1 {
+		fmt.Printf("%s\n", s) // 赤 黄 青
+	}
+	fmt.Println(len(arr1)) // 3
+}
 
 func Init() {
 	// Echo instance
@@ -16,6 +52,13 @@ func Init() {
 		NewSqlHandler(),
 		NewTokenHandler(), //jwt用のDI
 	)
+
+	router.GET("/test", func(c *gin.Context) {
+
+		ExampleScrape()
+
+		return
+	})
 
 	router.GET("/users", func(c *gin.Context) {
 

@@ -4,10 +4,10 @@ import (
 	"github.com/Kantaro0829/clean-architecture-in-go/domain"
 )
 
-type Tokenizer interface {
-	New(domain.User) (domain.Token, error)
-	Verify(domain.Token) error
-}
+// type Tokenizer interface {
+// 	New(domain.User) (domain.Token, error)
+// 	Verify(domain.Token) error
+// }
 
 type TokenizerImpl struct {
 	TokenHandler
@@ -23,8 +23,9 @@ func (tokenizer *TokenizerImpl) New(user domain.User) (domain.Token, error) {
 	return tokenString, nil
 }
 
-func (tokenizer *TokenizerImpl) Verify(token domain.Token) error {
+//戻り値error から(int error)に変更
+func (tokenizer *TokenizerImpl) Verify(token domain.Token) (int, error) {
 	tokenString := string(token)
-	err := tokenizer.VerifyToken(tokenString)
-	return err
+	id, err := tokenizer.VerifyToken(tokenString)
+	return id, err
 }
