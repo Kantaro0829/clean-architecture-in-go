@@ -4,18 +4,19 @@ import (
 	"fmt"
 
 	"github.com/Kantaro0829/clean-architecture-in-go/domain"
-	"github.com/Kantaro0829/clean-architecture-in-go/interfaces/token"
+	//"github.com/Kantaro0829/clean-architecture-in-go/interfaces/token"
 	//"golang.org/x/crypto/bcrypt"
 )
 
 type UserInteractor struct {
 	UserRepository UserRepository
 	//以下試しに追加
-	Tokenizer token.Tokenizer
+	//Tokenizer token.Tokenizer
+	Tokenizer Tokenizer
 }
 
 func (interactor *UserInteractor) Add(u domain.User) error {
-	//interactor.UserRepository.Store(u)
+
 	err := interactor.UserRepository.Store(u)
 	return err
 }
@@ -57,15 +58,13 @@ func (interactor *UserInteractor) Login(mail string, password string) (domain.To
 	return token, isValidated, nil
 }
 
-func (interactor *UserInteractor) Authenticate(token domain.Token) error {
-	if err := interactor.Tokenizer.Verify(token); err != nil {
-		// return &domain.ErrorWithStatus{
-		// 	Status:  http.StatusBadRequest,
-		// 	Message: err.Error(),
-		// }
-		return err
+func (interactor *UserInteractor) Authenticate(token domain.Token) (int, error) {
+	id, err := interactor.Tokenizer.Verify(token)
+	if err != nil {
+
+		return 0, err
 	}
-	return nil
+	return id, nil
 }
 
 func (interactor *UserInteractor) UpdateUser(userJson domain.User) (string, error, bool) {

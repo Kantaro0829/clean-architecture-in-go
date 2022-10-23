@@ -5,7 +5,6 @@ import (
 	"github.com/Kantaro0829/clean-architecture-in-go/infrastructure"
 
 	"github.com/gin-gonic/gin"
-
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
 )

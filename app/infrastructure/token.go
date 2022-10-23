@@ -15,6 +15,15 @@ type TokenHandler struct {
 	Secret string
 }
 
+type UserJwt struct {
+	Sub   int
+	Name  string
+	Email string
+	Iat   time.Time
+	Exp   int64
+	jwt.StandardClaims
+}
+
 func NewTokenHandler() token.TokenHandler {
 	tokenHandler := new(TokenHandler)
 	tokenHandler.Method = jwt.SigningMethodHS256
@@ -26,18 +35,26 @@ func NewTokenHandler() token.TokenHandler {
 }
 
 func (handler *TokenHandler) Generate(uid int, username string, email string) (string, error) {
-	// set header
-	token := jwt.New(handler.Method)
+	// // set header
+	// token := jwt.New(handler.Method)
 
-	// set claims (json contents)
-	claims := token.Claims.(jwt.MapClaims)
-	claims["sub"] = uid
-	claims["name"] = username
-	claims["email"] = email
-	claims["iat"] = time.Now()
-	claims["exp"] = time.Now().Add(time.Hour * 1).Unix()
+	// // set claims (json contents)
+	// claims := token.Claims.(jwt.MapClaims)
+	// claims["sub"] = uid
+	// claims["name"] = username
+	// claims["email"] = email
+	// claims["iat"] = time.Now()
+	// claims["exp"] = time.Now().Add(time.Hour * 1).Unix()
 
-	fmt.Printf("トークンの中身 : %v", claims)
+	token := jwt.NewWithClaims(jwt.GetSigningMethod("HS256"), &UserJwt{
+		Sub:   uid,
+		Email: email,
+		Name:  username,
+		Iat:   time.Now(),
+		Exp:   time.Now().Add(time.Hour * 1).Unix(),
+	})
+
+	//fmt.Printf("トークンの中身 : %v", claims)
 
 	// signature
 	tokenString, err := token.SignedString([]byte(handler.Secret))
@@ -47,24 +64,33 @@ func (handler *TokenHandler) Generate(uid int, username string, email string) (s
 	return tokenString, nil
 }
 
-func (handler *TokenHandler) VerifyToken(tokenString string) error {
+//戻り値error から(error, int)に変更
+func (handler *TokenHandler) VerifyToken(tokenString string) (int, error) {
 	fmt.Println("JWTトークンの中身")
 	fmt.Println(tokenString)
-	_, err := jwt.Parse(tokenString, func(token *jwt.Token) (interface{}, error) {
+	v, err := jwt.Parse(tokenString, func(token *jwt.Token) (interface{}, error) {
 		return []byte(handler.Secret), nil
 	})
+	fmt.Println(v)
+
+	userJwt := UserJwt{}
+	_, err = jwt.ParseWithClaims(tokenString, &userJwt, func(token *jwt.Token) (interface{}, error) {
+		return []byte(handler.Secret), nil
+	})
+
+	fmt.Println(userJwt.Sub)
 	if err != nil {
 		ve, ok := err.(*jwt.ValidationError)
 		if !ok {
-			return errors.New("Couldn't handle this token:" + err.Error())
+			return 0, errors.New("Couldn't handle this token:" + err.Error())
 		}
 		if ve.Errors&jwt.ValidationErrorMalformed != 0 {
-			return errors.New("Not even a token")
+			return 0, errors.New("Not even a token")
 		} else if ve.Errors&(jwt.ValidationErrorExpired|jwt.ValidationErrorNotValidYet) != 0 {
-			return errors.New("Token is either expired or not active yet")
+			return 0, errors.New("Token is either expired or not active yet")
 		} else {
-			return errors.New("Couldn't handle this token:" + err.Error())
+			return 0, errors.New("Couldn't handle this token:" + err.Error())
 		}
 	}
-	return nil
+	return userJwt.Sub, nil
 }
