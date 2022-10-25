@@ -52,6 +52,9 @@ func Init() {
 		NewSqlHandler(),
 		NewTokenHandler(), //jwt用のDI
 	)
+	wordController := controllers.NewWordController(
+		NewGoQueryHandler(),
+	)
 
 	router.GET("/test", func(c *gin.Context) {
 
@@ -177,6 +180,11 @@ func Init() {
 				"statsu":  http.StatusAccepted,
 				"message": "JWT認証成功",
 			})
+		return
+	})
+
+	router.GET("/word/:word", func(c *gin.Context) {
+		wordController.GetMeaning(c)
 		return
 	})
 
