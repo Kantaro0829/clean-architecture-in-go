@@ -14,7 +14,7 @@ services:
       - db
   
   get-subtitle-service:
-    build: ./getSubtitleService
+    build: ./getSubtitles
     restart: always
     tty: true
     ports:
@@ -22,7 +22,7 @@ services:
     environment:
       TZ: Asia/Tokyo
     volumes:
-      - "./getSubtitleService/:/projects"
+      - "./getSubtitles/:/projects"
     command: python /projects/app.py
   
   db:
