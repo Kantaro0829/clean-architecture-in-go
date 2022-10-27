@@ -1,2 +1,3 @@
 db/mysql_data/*
 .idea/
+__pycache__/
