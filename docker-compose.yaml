@@ -12,6 +12,19 @@ services:
       - 3000:3000
     depends_on:
       - db
+  
+  get-subtitle-service:
+    build: ./getSubtitles
+    restart: always
+    tty: true
+    ports:
+      - 5001:5001
+    environment:
+      TZ: Asia/Tokyo
+    volumes:
+      - "./getSubtitles/:/projects"
+    command: python /projects/app.py
+  
   db:
     image: mysql:5.7
     ports:
