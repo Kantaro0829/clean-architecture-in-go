@@ -13,6 +13,7 @@ services:
     depends_on:
       - db
   
+  #youtube動画の英語字幕取得用のサービス
   get-subtitle-service:
     build: ./getSubtitles
     restart: always
