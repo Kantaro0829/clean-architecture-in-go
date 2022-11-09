@@ -55,6 +55,9 @@ func Init() {
 	wordController := controllers.NewWordController(
 		NewGoQueryHandler(),
 	)
+	subtitleController := controllers.NewSubtitleController(
+		NewApiHandler(),
+	)
 
 	router.GET("/test", func(c *gin.Context) {
 
@@ -185,6 +188,11 @@ func Init() {
 
 	router.GET("/word/:word", func(c *gin.Context) {
 		wordController.GetMeaning(c)
+		return
+	})
+
+	router.GET("/subtitle/:videoId", func(c *gin.Context) {
+		subtitleController.GetSubtitle(c)
 		return
 	})
 

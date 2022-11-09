@@ -18,6 +18,7 @@ def get_subtittle():
     """
     subtittle = ""
     token_and_videoid = json.loads(request.get_data().decode())
+    print("videoID", token_and_videoid["video_id"])
     gs = GetSubtitle(token_and_videoid["video_id"])
 
     try:
