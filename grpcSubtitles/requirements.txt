@@ -1,0 +1,4 @@
+youtube_transcript_api
+google-api-python-client
+grpcio==1.39.0 
+grpcio-tools==1.39.0

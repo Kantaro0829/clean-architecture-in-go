@@ -25,6 +25,19 @@ services:
     volumes:
       - "./getSubtitles/:/projects"
     command: python /projects/app.py
+
+  #gRPCでyoutube動画の英語字幕取得用のサービス
+  grpc-subtitle-service:
+    build: ./grpcSubtitles
+    restart: always
+    tty: true
+    ports:
+      - 5002:5002
+    environment:
+      TZ: Asia/Tokyo
+    volumes:
+      - "./grpcSubtitles/:/projects"
+    command: python /projects/server.py
   
   db:
     image: mysql:5.7
