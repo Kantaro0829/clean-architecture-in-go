@@ -1,5 +1,5 @@
 package getsubtitle
 
 type ApiHandler interface {
-	Post(body interface{}, url string) ([]byte, error)
+	Post(reqBody interface{}, url string) ([]byte, error)
 }
